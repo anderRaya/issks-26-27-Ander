@@ -1,0 +1,51 @@
+def xor_bytes(mensaje, clave):
+    """
+    Aplica XOR byte a byte entre el mensaje y la clave.
+    """
+
+    resultado = bytearray()
+
+    for m, k in zip(mensaje, clave):
+        resultado.append(m ^ k)
+
+    return bytes(resultado)
+
+
+# -----------------------------------------
+# PROGRAMA PRINCIPAL
+# -----------------------------------------
+
+mensaje = input("Introduce el mensaje: ")
+clave = input("Introduce la clave: ")
+
+# Convertimos ambos textos a bytes
+mensaje_bytes = mensaje.encode("utf-8")
+clave_bytes = clave.encode("utf-8")
+
+# Comprobar que tienen la misma longitud
+if len(mensaje_bytes) != len(clave_bytes):
+    print("\nERROR:")
+    print("El mensaje y la clave deben tener la misma longitud.")
+    print(f"Longitud del mensaje: {len(mensaje_bytes)} bytes")
+    print(f"Longitud de la clave:  {len(clave_bytes)} bytes")
+
+else:
+
+    # CIFRADO
+    criptograma = xor_bytes(mensaje_bytes, clave_bytes)
+
+    print("\nCriptograma en hexadecimal:")
+    print(criptograma.hex())
+
+    # DESCIFRADO
+    mensaje_descifrado = xor_bytes(criptograma, clave_bytes)
+
+    print("\nMensaje descifrado:")
+    print(mensaje_descifrado.decode("utf-8"))
+
+    # COMPROBACIÓN
+    if mensaje_descifrado == mensaje_bytes:
+        print("\n✓ El descifrado es correcto.")
+        print("El mensaje original ha sido recuperado.")
+    else:
+        print("\n✗ Error: el mensaje no coincide.")
