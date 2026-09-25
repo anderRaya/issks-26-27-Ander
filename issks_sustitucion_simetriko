@@ -1,0 +1,222 @@
+from collections import Counter
+
+
+# Frecuencias de las letras en euskera proporcionadas por el ejercicio
+frecuencias_euskera = {
+    'a': 27829,
+    'i': 19649,
+    'r': 16598,
+    'e': 16372,
+    't': 15087,
+    'o': 12941,
+    'u': 11173,
+    'n': 10033,
+    'k': 8476,
+    'l': 8103,
+    'z': 6938,
+    's': 6927,
+    'd': 5225,
+    'g': 5206,
+    'b': 4797,
+    'm': 3846,
+    'p': 3455,
+    'h': 2223,
+    'x': 1244,
+    'f': 1168,
+    'j': 675,
+    'c': 54,
+    'y': 40,
+    'v': 28,
+    'w': 26,
+    'q': 7
+}
+
+
+def calcular_frecuencias(texto):
+    """
+    Calcula cuántas veces aparece cada letra en el texto.
+    """
+    letras = [
+        caracter.lower()
+        for caracter in texto
+        if caracter.isalpha()
+    ]
+
+    return Counter(letras)
+
+
+def crear_sustitucion_inicial(texto):
+    """
+    Crea una primera sustitución basándose en la frecuencia
+    de las letras del texto cifrado y la frecuencia del euskera.
+    """
+
+    frecuencias_texto = calcular_frecuencias(texto)
+
+    # Letras del texto cifrado ordenadas de más a menos frecuentes
+    letras_cifradas = [
+        letra for letra, cantidad
+        in frecuencias_texto.most_common()
+    ]
+
+    # Letras del euskera ordenadas de más a menos frecuentes
+    letras_euskera = sorted(
+        frecuencias_euskera,
+        key=frecuencias_euskera.get,
+        reverse=True
+    )
+
+    sustitucion = {}
+
+    for letra_cifrada, letra_original in zip(
+        letras_cifradas,
+        letras_euskera
+    ):
+        sustitucion[letra_cifrada] = letra_original
+
+    return sustitucion
+
+
+def descifrar(texto, sustitucion):
+    """
+    Aplica la sustitución al texto.
+    Mantiene mayúsculas, espacios y signos de puntuación.
+    """
+
+    resultado = ""
+
+    for caracter in texto:
+
+        letra = caracter.lower()
+
+        if letra in sustitucion:
+
+            nueva_letra = sustitucion[letra]
+
+            if caracter.isupper():
+                nueva_letra = nueva_letra.upper()
+
+            resultado += nueva_letra
+
+        else:
+            resultado += caracter
+
+    return resultado
+
+
+def mostrar_frecuencias(texto):
+    """
+    Muestra las frecuencias de las letras del mensaje.
+    """
+
+    frecuencias = calcular_frecuencias(texto)
+
+    print("\nFrecuencias del texto:")
+    print("----------------------")
+
+    for letra, cantidad in frecuencias.most_common():
+        print(f"{letra} : {cantidad}")
+
+
+def mostrar_sustitucion(sustitucion):
+    """
+    Muestra la tabla de sustituciones actual.
+    """
+
+    print("\nSustitución actual:")
+    print("-------------------")
+
+    for cifrada, original in sorted(sustitucion.items()):
+        print(f"{cifrada} -> {original}")
+
+
+def cambiar_sustitucion(sustitucion):
+    """
+    Permite cambiar una sustitución manualmente.
+    """
+
+    cifrada = input(
+        "\nLetra cifrada que quieres cambiar: "
+    ).lower()
+
+    original = input(
+        "Letra por la que quieres sustituirla: "
+    ).lower()
+
+    if len(cifrada) != 1 or not cifrada.isalpha():
+        print("La letra cifrada no es válida.")
+        return
+
+    if len(original) != 1 or not original.isalpha():
+        print("La letra original no es válida.")
+        return
+
+    sustitucion[cifrada] = original
+
+    print(
+        f"Sustitución actualizada: "
+        f"{cifrada} -> {original}"
+    )
+
+
+# --------------------------------------------------
+# PROGRAMA PRINCIPAL
+# --------------------------------------------------
+
+texto_cifrado = input(
+    "Introduce el texto cifrado:\n"
+)
+
+# Crear una primera aproximación
+sustitucion = crear_sustitucion_inicial(texto_cifrado)
+
+print("\n========== RESULTADO INICIAL ==========")
+
+mostrar_frecuencias(texto_cifrado)
+
+mostrar_sustitucion(sustitucion)
+
+print("\nTexto descifrado inicialmente:")
+print("--------------------------------")
+print(descifrar(texto_cifrado, sustitucion))
+
+
+# Menú interactivo
+while True:
+
+    print("\n========== MENÚ ==========")
+    print("1. Mostrar texto descifrado")
+    print("2. Mostrar frecuencias")
+    print("3. Mostrar sustituciones")
+    print("4. Cambiar una sustitución")
+    print("5. Salir")
+
+    opcion = input("\nElige una opción: ")
+
+    if opcion == "1":
+
+        print("\nTexto descifrado:")
+        print("-----------------")
+        print(descifrar(texto_cifrado, sustitucion))
+
+    elif opcion == "2":
+
+        mostrar_frecuencias(texto_cifrado)
+
+    elif opcion == "3":
+
+        mostrar_sustitucion(sustitucion)
+
+    elif opcion == "4":
+
+        cambiar_sustitucion(sustitucion)
+
+    elif opcion == "5":
+
+        print("Programa terminado.")
+        break
+
+    else:
+
+        print("Opción no válida.") 
+        
